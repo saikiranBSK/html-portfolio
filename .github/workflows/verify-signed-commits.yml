@@ -1,0 +1,19 @@
+name: Verify Signed Commits
+
+on: [push]
+
+jobs:
+  check-signatures:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Verify commit signatures
+      run: |
+        git log --show-signature -1
+        SIGNED_COMMITS_COUNT=$(git log --show-signature --pretty=format:'%G?' | grep -c 'G')
+        if [ "$SIGNED_COMMITS_COUNT" -eq "0" ]; then
+          echo "No signed commits found!"
+          exit 1
+        fi
